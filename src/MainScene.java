@@ -1,10 +1,7 @@
-import javafx.animation.PauseTransition;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -14,33 +11,34 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Stack;
 
-public class MainScene extends Application {
-    private final int NUM_RANDOM_CELLS = 10;
-    private final int WIDTH_GRID = 6;
-    private final int HEIGHT_GRID = 6;
-    private final int WIDTH_SCENE = 900;
-    private final int HEIGHT_SCENE = 700;
+public class MainScene {
+    private final int NUM_RANDOM_CELLS;
+    private final int WIDTH_GRID;
+    private final int HEIGHT_GRID;
+    private final int WIDTH_SCENE;
+    private final int HEIGHT_SCENE;
     private GridPane gridPane;
     private StackPane stackPane;
     private Scene mainScene;
-    private WelcomeScene welcomeScene;
     private Text statusText;
 
+    public MainScene(int NUM_RANDOM_CELLS, int WIDTH_GRID, int HEIGHT_GRID, int WIDTH_SCENE, int HEIGHT_SCENE) {
+        this.NUM_RANDOM_CELLS = NUM_RANDOM_CELLS;
+        this.WIDTH_GRID = WIDTH_GRID;
+        this.HEIGHT_GRID = HEIGHT_GRID;
+        this.WIDTH_SCENE = WIDTH_SCENE;
+        this.HEIGHT_SCENE = HEIGHT_SCENE;
+    }
 
-    @Override
-    public void start(Stage primaryStage) {
+    public void game(Stage primaryStage) {
 
-        //Welcome scene
-        welcomeScene = WelcomeScene.createWelcomeScene(WIDTH_SCENE, HEIGHT_SCENE);
-
-        //Main Scene
+        // Main Scene
         stackPane = new StackPane();
         stackPane.setStyle("-fx-background-color: linear-gradient(to right, #7e6638, #c5c524, #7e6638);");
 
@@ -52,7 +50,7 @@ public class MainScene extends Application {
         StackPane.setAlignment(gridPane, Pos.CENTER);
         stackPane.getChildren().add(gridPane);
 
-        statusText = new Text("<Let's go>\n<Click on button>");  // To report user error status or successful completion
+        statusText = new Text("<Let's go>\n<Click on a button>");  // To report user error status or successful completion
         statusText.setFont(Font.font("Verdana", FontWeight.MEDIUM, 18));
         statusText.setFill(Color.BROWN);
         statusText.setTextAlignment(TextAlignment.CENTER);
@@ -60,34 +58,20 @@ public class MainScene extends Application {
         stackPane.getChildren().add(statusText);
         StackPane.setAlignment(statusText, Pos.TOP_CENTER);
 
+        mainScene = new Scene(stackPane, WIDTH_SCENE, HEIGHT_SCENE);
+
         createButtons();
         do {
             defaultGrayColor();
             randomColoring();
-
         } while (isNotCondition2() || isNotCondition1());
-
-        mainScene = new Scene(stackPane, WIDTH_SCENE, HEIGHT_SCENE);
-
-        Image image = new Image("Image.png");
-        primaryStage.getIcons().add(image);
-        primaryStage.setTitle("YingYang puzzle");
-
-        primaryStage.setHeight(HEIGHT_SCENE);
-        primaryStage.setWidth(WIDTH_SCENE);
-
-        primaryStage.setScene(welcomeScene);
-        primaryStage.show();
-
-
-        int delaySeconds = 3;
-        PauseTransition delay = new PauseTransition(Duration.seconds(delaySeconds));
-        delay.setOnFinished(event -> primaryStage.setScene(mainScene));
-        delay.play();
 
         // Resize Scene
         mainScene.widthProperty().addListener((observable, oldValue, newValue) -> resizeGridPane(mainScene.getWidth(), mainScene.getHeight()));
         mainScene.heightProperty().addListener((observable, oldValue, newValue) -> resizeGridPane(mainScene.getWidth(), mainScene.getHeight()));
+
+        primaryStage.setScene(mainScene);
+        primaryStage.show();
     }
 
     private void createButtons() {
@@ -132,7 +116,7 @@ public class MainScene extends Application {
                     colors.add(button.getStyle());
                 }
 
-                // checking on condition1 and condition2
+                // checking condition 1 and condition 2
                 if (isNotCondition2() || isNotCondition1()) {
                     button.setStyle(colors.get(colors.size() - 2));
 
@@ -155,7 +139,7 @@ public class MainScene extends Application {
                             button1.setDisable(true);
                         }
                     }
-                    statusText.setText("**Congratulations, you won**");
+                    statusText.setText("** Congratulations, you won! **");
                 }
             }
 
@@ -168,7 +152,7 @@ public class MainScene extends Application {
                     colors.add(button.getStyle());
                 }
 
-                // checking on condition2
+                // checking condition 2
                 if (isNotCondition2()) {
                     button.setStyle(colors.get(colors.size() - 2));
 
@@ -181,7 +165,7 @@ public class MainScene extends Application {
             }
         });
 
-        // action listener of mouse is entered or exited for border of the button
+        // action listener for mouse enter or exit to show/hide button borders
         button.setOnMouseEntered(event -> button.setBorder(new Border(new BorderStroke(Color.DARKGREEN, BorderStrokeStyle.DOTTED,
                 CornerRadii.EMPTY, new BorderWidths(5)))));
 
@@ -230,12 +214,12 @@ public class MainScene extends Application {
 
     }
 
-    private boolean isNotCondition1() { // Check 2*2 squares
+    private boolean isNotCondition1() { // Check 2x2 squares
 
         for (int row = 0; row < HEIGHT_GRID - 1; row++) {
             for (int col = 0; col < WIDTH_GRID - 1; col++) {
 
-                //get buttons of 2*2 square
+                // get buttons of 2x2 square
                 Button button1 = (Button) gridPane.getChildren().get(row * WIDTH_GRID + col);
                 Button button2 = (Button) gridPane.getChildren().get(row * WIDTH_GRID + (col + 1));
                 Button button3 = (Button) gridPane.getChildren().get((row + 1) * WIDTH_GRID + col);
@@ -254,10 +238,10 @@ public class MainScene extends Application {
         return false;
     }
 
-    // check Continuity of buttons
+    // Check continuity of buttons
     private boolean isNotCondition2() {
 
-        // Collection of white or black button index
+        // Collection of white or black button indices
         ArrayList<Integer> whiteButtons = new ArrayList<>();
         ArrayList<Integer> blackButtons = new ArrayList<>();
 
@@ -284,8 +268,8 @@ public class MainScene extends Application {
     }
 
     private boolean checkConnectivity(ArrayList<Integer> buttons) {
-        HashSet<Integer> visited = new HashSet<>();  // For button saves that have already been checked
-        Stack<Integer> stack = new Stack<>();  // Used to perform depth first search(DFS algorithm).
+        HashSet<Integer> visited = new HashSet<>();  // Buttons that have already been checked
+        Stack<Integer> stack = new Stack<>();  // Used to perform depth-first search (DFS).
 
         int startButton = buttons.get(0);
         stack.push(startButton);
@@ -294,13 +278,13 @@ public class MainScene extends Application {
             int currentButton = stack.pop();
             visited.add(currentButton);
 
-            // Getting the index of nearby buttons
+            // Get the indices of neighboring buttons
             int indexUpButton = currentButton - WIDTH_GRID;
             int indexDownButton = currentButton + WIDTH_GRID;
             int indexLeftButton = currentButton - 1;
             int indexRightButton = currentButton + 1;
 
-            // Check if any nearby button is in the same set of buttons
+            // Check if any neighboring button is in the same set of buttons
             if (buttons.contains(indexUpButton) && !visited.contains(indexUpButton)) stack.push(indexUpButton);
             if (buttons.contains(indexDownButton) && !visited.contains(indexDownButton)) stack.push(indexDownButton);
             if (buttons.contains(indexLeftButton) && !visited.contains(indexLeftButton) && currentButton % WIDTH_GRID != 0) stack.push(indexLeftButton);
@@ -311,7 +295,7 @@ public class MainScene extends Application {
 
     private boolean isEndOfSuccess() {
 
-        int count = 0;  // Number of white or black button
+        int count = 0;  // Number of white or black buttons
         for (int row = 0; row < HEIGHT_GRID; row++) {
             for (int col = 0; col < WIDTH_GRID; col++) {
                 Button button = (Button) gridPane.getChildren().get(row * WIDTH_GRID + col);
@@ -331,9 +315,5 @@ public class MainScene extends Application {
             Button button = (Button) node;
             button.setPrefSize(buttonSize, buttonSize);
         });
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
