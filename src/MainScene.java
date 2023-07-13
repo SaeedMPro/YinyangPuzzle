@@ -1,7 +1,10 @@
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -12,10 +15,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public class MainScene {
     private final int NUM_RANDOM_CELLS;
@@ -128,9 +128,7 @@ public class MainScene {
 
                 // Checking for the condition that all the houses have been successfully painted
                 if (isEndOfSuccess()) {
-                    statusText.setFill(Color.DARKGREEN);
-                    statusText.setStroke(Color.DARKGREEN);
-                    statusText.setFont(Font.font(20));
+                    Alert endAlert = new Alert(Alert.AlertType.INFORMATION);
 
                     // locking buttons
                     for (int row1 = 0; row1 < HEIGHT_GRID; row1++) {
@@ -139,7 +137,16 @@ public class MainScene {
                             button1.setDisable(true);
                         }
                     }
-                    statusText.setText("** Congratulations, you won! **");
+
+
+                    endAlert.setTitle("End of game");
+                    endAlert.setHeaderText("...Congratulations, you won...");
+                    endAlert.setContentText("Click OK to finish the game.");
+                    Optional<ButtonType> result = endAlert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        Platform.exit();
+                    }
+
                 }
             }
 
