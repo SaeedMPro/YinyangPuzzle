@@ -47,7 +47,7 @@ public class WelcomeScene extends Application {
         // Creating the "New Game" button
         Button newGameButton = new Button("New Game");
         newGameButton.setStyle("-fx-background-color: #000000; -fx-text-fill: white;" +
-                " -fx-font-family: fantasy; -fx-font-size: 14px; -fx-padding: 10px 20px;" +
+                " -fx-font-family: fantasy; -fx-font-size: 15px; -fx-padding: 10px 20px;" +
                 "-fx-shape: 'M 0 50 C 0 20, 50 0, 100 0 C 150 0, 200 20, 200 50 C 200 80, 150 100, 100 100 C 50 100, 0 80, 0 50 Z';" +
                 "-fx-effect: dropshadow(two-pass-box, rgba(1,1,1,1), 10, 0, 0, 10);");
 
@@ -58,6 +58,21 @@ public class WelcomeScene extends Application {
 
         // Handling the "New Game" button click event
         newGameButton.setOnAction(event -> showGameSettingsDialog(stage));
+
+        // Creating the "Recent Game" button
+        Button recentGsmeButton = new Button("Recent Game");
+        recentGsmeButton.setStyle("-fx-background-color: #000000; -fx-text-fill: white;" +
+                " -fx-font-family: fantasy; -fx-font-size: 13px; -fx-padding: 10px 20px;" +
+                "-fx-shape: 'M 0 50 C 0 20, 50 0, 100 0 C 150 0, 200 20, 200 50 C 200 80, 150 100, 100 100 C 50 100, 0 80, 0 50 Z';" +
+                "-fx-effect: dropshadow(two-pass-box, rgba(1,1,1,1), 10, 0, 0, 10);");
+
+        // Adding the "Recent Game" button to the root StackPane
+        root.getChildren().add(recentGsmeButton);
+        StackPane.setAlignment(recentGsmeButton, Pos.BOTTOM_CENTER);
+        StackPane.setMargin(recentGsmeButton, new Insets(0, 0, 50, 0));
+
+        // Handling the "Recent Game" button click event
+        recentGsmeButton.setOnAction(event -> loadRecentGame(stage));
 
         // Configuring the stage
         stage.getIcons().add(image);
@@ -119,6 +134,9 @@ public class WelcomeScene extends Application {
         settingsDialog.showAndWait();
     }
 
+    private void loadRecentGame(Stage stage) {
+
+    }
     public static void main(String[] args) {
         launch(args);
     }

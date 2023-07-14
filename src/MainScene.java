@@ -15,6 +15,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 public class MainScene {
@@ -57,6 +61,17 @@ public class MainScene {
         statusText.setStroke(Color.BLACK);
         stackPane.getChildren().add(statusText);
         StackPane.setAlignment(statusText, Pos.TOP_CENTER);
+
+        // Creating the "Save Game" button
+        Button saveButton = new Button("Save Game");
+        saveButton.setStyle("-fx-background-color: #000000; -fx-text-fill: white;" +
+                " -fx-font-family: fantasy; -fx-font-size: 15px; -fx-padding: 10px 20px;" +
+                "-fx-shape: 'M 0 50 C 0 20, 50 0, 100 0 C 150 0, 200 20, 200 50 C 200 80, 150 100, 100 100 C 50 100, 0 80, 0 50 Z';" +
+                "-fx-effect: dropshadow(one-pass-box, rgba(1,1,1,1), 10, 0, 0, 10);");
+        stackPane.getChildren().add(saveButton);
+        StackPane.setAlignment(saveButton, Pos.BOTTOM_CENTER);
+        StackPane.setMargin(saveButton, new Insets(0, 0, 10, 0));
+        saveButton.setOnAction(event -> saveToFile());
 
         mainScene = new Scene(stackPane, WIDTH_SCENE, HEIGHT_SCENE);
 
@@ -294,8 +309,10 @@ public class MainScene {
             // Check if any neighboring button is in the same set of buttons
             if (buttons.contains(indexUpButton) && !visited.contains(indexUpButton)) stack.push(indexUpButton);
             if (buttons.contains(indexDownButton) && !visited.contains(indexDownButton)) stack.push(indexDownButton);
-            if (buttons.contains(indexLeftButton) && !visited.contains(indexLeftButton) && currentButton % WIDTH_GRID != 0) stack.push(indexLeftButton);
-            if (buttons.contains(indexRightButton) && !visited.contains(indexRightButton) && (currentButton + 1) % WIDTH_GRID != 0) stack.push(indexRightButton);
+            if (buttons.contains(indexLeftButton) && !visited.contains(indexLeftButton) && currentButton % WIDTH_GRID != 0)
+                stack.push(indexLeftButton);
+            if (buttons.contains(indexRightButton) && !visited.contains(indexRightButton) && (currentButton + 1) % WIDTH_GRID != 0)
+                stack.push(indexRightButton);
         }
         return visited.size() == buttons.size();
     }
@@ -322,5 +339,35 @@ public class MainScene {
             Button button = (Button) node;
             button.setPrefSize(buttonSize, buttonSize);
         });
+    }
+
+    private void saveToFile() {
+
+        // Collection of white or black button indices
+        ArrayList<Integer> white = new ArrayList<>();
+        ArrayList<Integer> black = new ArrayList<>();
+
+        for (int row = 0; row < HEIGHT_GRID; row++) {
+            for (int col = 0; col < WIDTH_GRID; col++) {
+                Button button1 = (Button) gridPane.getChildren().get(row * WIDTH_GRID + col);
+
+                if (button1.getStyle().contains("white")) {
+                    white.add(row * WIDTH_GRID + col);
+                } else if (button1.getStyle().contains("black")) {
+                    black.add(row * WIDTH_GRID + col);
+                }
+            }
+        }
+        Information information = new Information(white, black, HEIGHT_GRID, WIDTH_GRID);
+        File file = new File("RecentGame.txt");
+        try (
+                ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file)
+                )
+        ) {
+            objOut.writeObject(information);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
