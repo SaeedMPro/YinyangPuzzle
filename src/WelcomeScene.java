@@ -143,14 +143,16 @@ public class WelcomeScene extends Application {
         File file = new File("RecentGame.txt");
 
         try (
-                ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file)
-                )
+                ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file))
         ) {
-
+            // Read the serialized Information object from the file
             Information information = (Information) objIn.readObject();
+
+            // Create a new MainScene object with the loaded game data and start the game on the given stage
             new MainScene(information, WIDTH_SCENE, HEIGHT_SCENE).game(stage);
 
         } catch (IOException | ClassNotFoundException e) {
+            // If the file is not found or there is an error during deserialization, show an error alert
             Alert endAlert = new Alert(Alert.AlertType.ERROR);
             endAlert.setTitle("Recent Game");
             endAlert.setHeaderText("Recent game not found!");

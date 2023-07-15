@@ -367,6 +367,7 @@ public class MainScene {
         ArrayList<Integer> white = new ArrayList<>();
         ArrayList<Integer> black = new ArrayList<>();
 
+        // Iterate over the grid to find white and black buttons
         for (int row = 0; row < HEIGHT_GRID; row++) {
             for (int col = 0; col < WIDTH_GRID; col++) {
                 Button button1 = (Button) gridPane.getChildren().get(row * WIDTH_GRID + col);
@@ -378,32 +379,41 @@ public class MainScene {
                 }
             }
         }
+
+        // Create an instance of the Information class to store the game data
         Information information = new Information(white, black, HEIGHT_GRID, WIDTH_GRID, NUM_RANDOM_CELLS);
+
+        // Save the information to a file named "RecentGame.txt"
         File file = new File("RecentGame.txt");
         try (
-                ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file)
-                )
+                ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file))
         ) {
             objOut.writeObject(information);
+
+            // Show an alert to inform the user that the game has been saved successfully
             Alert endAlert = new Alert(Alert.AlertType.INFORMATION);
             endAlert.setTitle("Save Game");
             endAlert.setHeaderText("Your game saved successfully");
             endAlert.setContentText("You can continue the game later from where you saved the game with the \"Recent Game\" button.");
             endAlert.showAndWait();
         } catch (IOException e) {
+            // If an error occurs while saving, throw a runtime exception
             throw new RuntimeException(e);
         }
-
     }
+
     private void coloringWithRecentGame() {
-        for (int index:
-             white) {
+        // Restore the game state based on the saved information
+
+        // Set the color of the buttons that were white in the saved game
+        for (int index : white) {
             gridPane.getChildren().get(index).setStyle("-fx-background-color: white");
         }
-        for (int index:
-             black) {
-            gridPane.getChildren().get(index).setStyle("-fx-background-color: black");
 
+        // Set the color of the buttons that were black in the saved game
+        for (int index : black) {
+            gridPane.getChildren().get(index).setStyle("-fx-background-color: black");
         }
     }
+
 }
