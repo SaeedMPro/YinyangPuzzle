@@ -1,6 +1,7 @@
-**YingYang Puzzle Game**
+## YingYang Puzzle Game
 
 **Introduction**
+
 YingYang Puzzle is a simple JavaFX-based puzzle game where you need to color the buttons in a grid according to specific rules. The objective of the game is to color the buttons in such a way that two conditions are met:
 1. No 2x2 square in the grid should have all buttons of the same color.
 2. The white and black buttons should form connected regions in the grid.
