@@ -31,13 +31,28 @@ public class MainScene {
     private StackPane stackPane;
     private Scene mainScene;
     private Text statusText;
+    private ArrayList<Integer> white;
+    private ArrayList<Integer> black;
+    private final boolean isNewGame;
 
-    public MainScene(int NUM_RANDOM_CELLS, int WIDTH_GRID, int HEIGHT_GRID, int WIDTH_SCENE, int HEIGHT_SCENE) {
+    public MainScene(int NUM_RANDOM_CELLS, int WIDTH_GRID, int HEIGHT_GRID, int WIDTH_SCENE, int HEIGHT_SCENE) { // To loading New Game
+        isNewGame = true;
         this.NUM_RANDOM_CELLS = NUM_RANDOM_CELLS;
         this.WIDTH_GRID = WIDTH_GRID;
         this.HEIGHT_GRID = HEIGHT_GRID;
         this.WIDTH_SCENE = WIDTH_SCENE;
         this.HEIGHT_SCENE = HEIGHT_SCENE;
+    }
+
+    public MainScene(Information info, int WIDTH_SCENE, int HEIGHT_SCENE) { // To loading Recent Game
+        isNewGame = false;
+        this.WIDTH_SCENE = WIDTH_SCENE;
+        this.HEIGHT_SCENE = HEIGHT_SCENE;
+        this.WIDTH_GRID = info.col;
+        this.HEIGHT_GRID = info.row;
+        this.NUM_RANDOM_CELLS = info.random;
+        this.white = new ArrayList<>(info.white);
+        this.black = new ArrayList<>(info.black);
     }
 
     public void game(Stage primaryStage) {
@@ -76,10 +91,15 @@ public class MainScene {
         mainScene = new Scene(stackPane, WIDTH_SCENE, HEIGHT_SCENE);
 
         createButtons();
-        do {
+        if (isNewGame) {
+            do {
+                defaultGrayColor();
+                randomColoring();
+            } while (isNotCondition2() || isNotCondition1());
+        } else {
             defaultGrayColor();
-            randomColoring();
-        } while (isNotCondition2() || isNotCondition1());
+            coloringWithRecentGame();
+        }
 
         // Resize Scene
         mainScene.widthProperty().addListener((observable, oldValue, newValue) -> resizeGridPane(mainScene.getWidth(), mainScene.getHeight()));
@@ -358,16 +378,32 @@ public class MainScene {
                 }
             }
         }
-        Information information = new Information(white, black, HEIGHT_GRID, WIDTH_GRID);
+        Information information = new Information(white, black, HEIGHT_GRID, WIDTH_GRID, NUM_RANDOM_CELLS);
         File file = new File("RecentGame.txt");
         try (
                 ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file)
                 )
         ) {
             objOut.writeObject(information);
+            Alert endAlert = new Alert(Alert.AlertType.INFORMATION);
+            endAlert.setTitle("Save Game");
+            endAlert.setHeaderText("Your game saved successfully");
+            endAlert.setContentText("You can continue the game later from where you saved the game with the \"Recent Game\" button.");
+            endAlert.showAndWait();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+    }
+    private void coloringWithRecentGame() {
+        for (int index:
+             white) {
+            gridPane.getChildren().get(index).setStyle("-fx-background-color: white");
+        }
+        for (int index:
+             black) {
+            gridPane.getChildren().get(index).setStyle("-fx-background-color: black");
+
+        }
     }
 }

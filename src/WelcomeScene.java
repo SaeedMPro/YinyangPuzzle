@@ -13,6 +13,11 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class WelcomeScene extends Application {
     private int row;
     private int col;
@@ -135,8 +140,25 @@ public class WelcomeScene extends Application {
     }
 
     private void loadRecentGame(Stage stage) {
+        File file = new File("RecentGame.txt");
 
+        try (
+                ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file)
+                )
+        ) {
+
+            Information information = (Information) objIn.readObject();
+            new MainScene(information, WIDTH_SCENE, HEIGHT_SCENE).game(stage);
+
+        } catch (IOException | ClassNotFoundException e) {
+            Alert endAlert = new Alert(Alert.AlertType.ERROR);
+            endAlert.setTitle("Recent Game");
+            endAlert.setHeaderText("Recent game not found!");
+            endAlert.setContentText("Please, Click on New Game");
+            endAlert.showAndWait();
+        }
     }
+
     public static void main(String[] args) {
         launch(args);
     }
